@@ -1,6 +1,6 @@
 FROM node:18.16-alpine3.17 as dev
 
-RUN apk add dumb-init
+RUN apk add dumb-init vim
 
 WORKDIR /app
 
