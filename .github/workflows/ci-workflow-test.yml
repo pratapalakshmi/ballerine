@@ -53,4 +53,11 @@ jobs:
 
           - name : Tail output
             run: |
-              tail -n 250 nohup.out
+              result=$(tail -n 250 nohup.out | grep exit )
+              if [[ -z "$result" ]] then
+                echo " Steps succeeded"
+                exit 0
+              else
+                echo " Steps failed"
+                exit 1
+              fi
