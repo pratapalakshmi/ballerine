@@ -42,17 +42,8 @@ jobs:
           - name: Monorepo init
             run: pnpm monorepo:init
 
-          - name: Run Docker DB
-            run: docker-compose -f services/workflows-service/docker-compose.db.yml up -d
-
-          - name: Sleep for 60 seconds
-            run: sleep 60
-
           - name: Run KYB example
             run: nohup pnpm run kyb-manual-review-example > nohup.out & 
-
-          - name: Setup upterm session
-            uses: lhotari/action-upterm@v1
       
           - name: Sleep for 60 seconds
             run: sleep 60
