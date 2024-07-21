@@ -102,6 +102,9 @@ import { Static } from '@sinclair/typebox';
 import dayjs from 'dayjs';
 import { entitiesUpdate } from './utils/entities-update';
 import { BusinessReportService } from '@/business-report/business-report.service';
+import { RuleEngineService } from '@/rule-engine/rule-engine.service';
+import { RiskRuleService, TFindAllRulesOptions } from '@/rule-engine/risk-rule.service';
+import { SentryService } from '@/sentry/sentry.service';
 
 type TEntityId = string;
 
@@ -138,6 +141,9 @@ export class WorkflowService {
     private readonly workflowTokenService: WorkflowTokenService,
     private readonly uiDefinitionService: UiDefinitionService,
     private readonly prismaService: PrismaService,
+    private readonly riskRuleService: RiskRuleService,
+    private readonly ruleEngineService: RuleEngineService,
+    private readonly sentry: SentryService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
@@ -1894,7 +1900,12 @@ export class WorkflowService {
 
     if (isValid) return;
 
-    throw ValidationError.fromAjvError(validate.errors!);
+    this.sentry.captureException(new Error('Workflow definition context validation failed'));
+    this.logger.error('Workflow definition context validation failed', {
+      errors: validate.errors,
+      context,
+      workflowDefinitionId: workflowDefinition.id,
+    });
   }
 
   async event(
@@ -1939,6 +1950,30 @@ export class WorkflowService {
         },
         // @ts-expect-error - error from Prisma types fix
         extensions: workflowDefinition.extensions,
+        invokeRiskRulesAction: async (
+          context: object,
+          ruleStoreServiceOptions: TFindAllRulesOptions,
+        ) => {
+          const rules = await this.riskRuleService.findAll(ruleStoreServiceOptions);
+
+          return rules.map(rule => {
+            try {
+              return {
+                result: this.ruleEngineService.run(rule.ruleSet, context),
+                ...rule,
+              } as const;
+            } catch (ex) {
+              return {
+                ...rule,
+                result: {
+                  status: 'FAILED',
+                  message: isErrorWithMessage(ex) ? ex.message : undefined,
+                  error: ex,
+                },
+              } as const;
+            }
+          });
+        },
         invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
           const runnableChildWorkflow = await this.persistChildEvent(
             childPluginConfiguration,
@@ -2366,17 +2401,5 @@ export class WorkflowService {
     return await this.workflowRuntimeDataRepository.updateById(workflowRuntimeDataId, {
       data: args,
     });
-  }
-
-  async getByEntityId(
-    entityId: string,
-    projectId: TProjectId,
-    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
-  ) {
-    return await this.workflowRuntimeDataRepository.findFirstByEntityId(
-      entityId,
-      [projectId],
-      args,
-    );
   }
 }

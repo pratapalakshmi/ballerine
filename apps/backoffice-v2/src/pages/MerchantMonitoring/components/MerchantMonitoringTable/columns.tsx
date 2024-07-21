@@ -53,7 +53,7 @@ export const columns = [
     },
     header: 'Updated At',
   }),
-  columnHelper.accessor('business.website', {
+  columnHelper.accessor('website', {
     cell: info => {
       const website = info.getValue();
 
@@ -61,7 +61,7 @@ export const columns = [
     },
     header: 'Website',
   }),
-  columnHelper.accessor('business.companyName', {
+  columnHelper.accessor('companyName', {
     cell: info => {
       const companyName = info.getValue();
 
@@ -84,6 +84,7 @@ export const columns = [
 
       return (
         <div className="flex items-center gap-2">
+          {!riskScore && riskScore !== 0 && <TextWithNAFallback className={'py-0.5'} />}
           {(riskScore || riskScore === 0) && (
             <Badge
               className={ctw(

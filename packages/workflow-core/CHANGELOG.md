@@ -1,5 +1,50 @@
 # @ballerine/workflow-core
 
+## 0.6.22
+
+### Patch Changes
+
+- bump
+- Updated dependencies
+  - @ballerine/common@0.9.14
+
+## 0.6.21
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.13
+
+## 0.6.20
+
+### Patch Changes
+
+- added errored plugins persist to destination logic
+
+## 0.6.19
+
+### Patch Changes
+
+- Fix rules
+
+## 0.6.18
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.9.12
+
+## 0.6.17
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+- Updated dependencies
+  - @ballerine/common@0.9.11
+
 ## 0.6.16
 
 ### Patch Changes

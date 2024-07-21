@@ -34,6 +34,8 @@ import { BusinessReportModule } from '@/business-report/business-report.module';
 import { AlertModule } from '@/alert/alert.module';
 import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
 import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
+import { RuleEngineModule } from '@/rule-engine/rule-engine.module';
+import { SentryService } from '@/sentry/sentry.service';
 
 @Module({
   controllers: [WebhooksController],
@@ -49,6 +51,7 @@ import { AlertDefinitionModule } from '@/alert-definition/alert-definition.modul
     AlertModule,
     DataAnalyticsModule,
     AlertDefinitionModule,
+    RuleEngineModule,
   ],
   providers: [
     WorkflowService,
@@ -74,6 +77,7 @@ import { AlertDefinitionModule } from '@/alert-definition/alert-definition.modul
     FilterService,
     FilterRepository,
     WebhooksService,
+    SentryService,
   ],
   exports: [],
 })
