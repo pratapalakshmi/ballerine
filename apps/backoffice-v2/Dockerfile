@@ -12,6 +12,8 @@ RUN mv /app/.env.example /app/.env
 
 ENV NODE_OPTIONS="--max-old-space-size=8192"
 
+RUN apt update; apt-get install -y xdg-utils
+
 RUN npm run build
 
 ENV PATH="$PATH:/app/node_modules/.bin"
