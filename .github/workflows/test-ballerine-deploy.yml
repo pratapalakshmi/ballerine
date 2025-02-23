@@ -1,6 +1,7 @@
 name: Test Ballerine Deploy
 
 on:
+  workflow_dispatch:
   push:
     branches: [ dev ]
 
@@ -54,4 +55,6 @@ jobs:
 
     - name: Clean up
       if: always()
-      run: docker-compose down
+      run: |
+        cd deploy
+        docker-compose down -v
